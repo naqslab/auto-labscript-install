@@ -1,0 +1,9 @@
+name: auto_labscript
+channels:
+  - default
+  - conda-forge
+dependencies:
+  - pyautogui
+  - pip
+  - pip:
+    - opencv-python
