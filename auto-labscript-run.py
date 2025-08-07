@@ -1,35 +1,92 @@
 import pygetwindow as gw
 import pyautogui
 import time
-import cv2
+import os
 
-# target_string = "the labscript suite"
-# filtered_windows = []
-# script_order = ['runmanager', 'blacs', 'lyse', 'runviewer']
+def format_img_path(img_name):
+    return os.path.join("imgs", f"{img_name.replace(' ', '_').lower()}.png")
 
-# for window in all_windows:
-#     if target_string in window.title:
-#         filtered_windows.append(window)
+def locate_image(img_path, confidence=0.8):
+    try:
+        return pyautogui.locateCenterOnScreen(img_path, confidence=confidence)
+    except Exception as e:
+        print(f"Error locating image '{img_path}': {e}")
+        return None
 
-# for window in filtered_windows:
-#     print(f"Found window: {window.title}")
-#     if window.isMinimized:
-#         window.restore()
-#     window.activate()
+def tick_box(unticked_img, ticked_img, confidence=0.8, max_attempts=3):
+    '''Only ticks box if already unticked
 
-pyautogui.FAILSAFE = True
-pyautogui.PAUSE = 0.3
+    Args:
+        unticked_img (str): _description_
+        ticked_img (str): _description_
+        confidence (float, optional): _description_. Defaults to 0.8.
+        max_attempts (int, optional): _description_. Defaults to 3.
 
-script_order = ['runmanager', 'blacs', 'lyse', 'runviewer']
-target_string = "the labscript suite"
-button_map = {
-    'runmanager': ['runmanager-engage'],
-    'blacs': [],
-    'lyse': [],
-    'runviewer': []
-}
+    Returns:
+        bool: True if checkbox was found, False if not
+    '''
+    unticked_path = format_img_path(unticked_img)
+    ticked_path = format_img_path(ticked_img)
 
-def find_labscript_windows():
+    for attempt in range(max_attempts):
+        tick_loc = locate_image(ticked_path, confidence)
+        if tick_loc:
+            print("Box already ticked")
+            return True
+        
+        untick_loc = locate_image(unticked_path, confidence)
+        if untick_loc:
+            print("Ticking box")
+            pyautogui.click(untick_loc)
+            return True
+
+        time.sleep(0.5)
+
+    print("Tickbox not found.")
+    return False
+
+def fill_empty_field(empty_img, filled_img, text_to_type, confidence=0.8, max_attempts=3):
+    empty_path = format_img_path(empty_img)
+    filled_path = format_img_path(filled_img)
+    
+    for attempt in range(max_attempts):
+        filled_loc = locate_image(filled_path, confidence)
+        if filled_loc:
+            print("Field already filled")
+            return True
+        
+        empty_loc = locate_image(empty_path, confidence)
+        if empty_loc:
+            print(f"Filling field with {text_to_type}")
+            pyautogui.write(text_to_type)
+            return True
+        
+        time.sleep(0.5)
+        
+    print("Field not found.")
+    return False
+        
+def click_button(button_text, confidence=0.8, max_attempts=3):
+    image_path = format_img_path(button_text)
+
+    for _ in range(max_attempts):
+        loc = locate_image(image_path, confidence)
+        if loc:
+            pyautogui.click(loc)
+            print(f"Clicked '{button_text}' at {loc}")
+            return True
+        time.sleep(0.5)
+
+    print(f"Failed to locate button: {button_text}")
+    return False
+
+def activate_window(window):
+    if window.isMinimized:
+        window.restore()
+    window.activate()
+    time.sleep(1.5)
+
+def find_labscript_windows(target_string, script_order):
     all_windows = gw.getAllWindows()
     matching = {}
     for window in all_windows:
@@ -40,43 +97,65 @@ def find_labscript_windows():
                     matching[app] = window
     return matching
 
-def process_app(app_name, window):
-    print(f"\nActivating {app_name.title()}")
+def runmanager_routine():
+    print("[Runmanager] Executing routine")
+    time.sleep(0.5)
+    tick_box('runmanager-viewshots-unclicked', 'runmanager-viewshots-clicked', confidence=.9)
+    time.sleep(0.5)
+    click_button('runmanager-engage')
 
-    if window.isMinimized:
-        window.restore()
-    window.activate()
-    time.sleep(1.0)
+def blacs_routine():
+    print("[Blacs] Executing routine")
+    # if tick_box('blacs-lyse-server-empty', 'blacs-lyse-server-local'):
+    #     pyautogui.write('127.0.0.1')
+    fill_empty_field(
+        empty_img = 'blacs-lyse-server-empty', 
+        filled_img = 'blacs-lyse-server-local',
+        text_to_type = '127.0.0.1'
+    )
+    # assert blacs sent a shot??? maybe that's going to be timing based screenshot matching aka bad
 
-    for button in button_map.get(app_name, []):
-        print(f"Attempting to click '{button}'")
-        if not click_button(button):
-            print(f"Failed to find or click '{button}'")
-        else:
-            time.sleep(0.5)
+def lyse_routine():
+    print("[Lyse] Executing routine")
+    # activate_window('1 - example_analysis_script.py')
+    pass
 
-def click_button(button_text, confidence=0.8, max_attempts=3):
-    image_path = f"imgs/{button_text.replace(' ', '_').lower()}.png"
-    for attempt in range(max_attempts):
-        location = pyautogui.locateCenterOnScreen(image_path, confidence=confidence)
-        if location:
-            pyautogui.click(location)
-            print(f"Clicked '{button_text}' at {location}")
-            return True
-        time.sleep(0.5)
-    return False
+def runviewer_routine():
+    print("[Runviewer] Executing routine")
+    tick_box('runviewer-checkbox-withtext-unticked', 'runviewer-checkbox-withtext-ticked')
+
+ROUTINES = {
+    'runmanager': runmanager_routine,
+    'blacs': blacs_routine,
+    'lyse': lyse_routine,
+    'runviewer': runviewer_routine
+}
 
 def main():
     print("Locating labscript suite windows")
-    lab_windows = find_labscript_windows()
+    windows = find_labscript_windows(TARGET_STRING, SCRIPT_ORDER)
 
-    for app in script_order:
-        if app in lab_windows:
-            process_app(app, lab_windows[app])
+    for app in SCRIPT_ORDER:
+        win = windows.get(app)
+        if not win:
+            print(f"[{app.title()}] Window not found!")
+            continue
+
+        print(f"\n[{app.title()}] Activating")
+        activate_window(win)
+
+        routine = ROUTINES.get(app)
+        if routine:
+            routine()
         else:
-            print(f"Window for '{app}' not found!")
+            print(f"[{app.title()}] No routine defined.")
 
-    print("\nAutomation pipeline complete.")
+    print("\n=== Auto labscript complete ===")
+
+SCRIPT_ORDER = ['runmanager', 'blacs', 'lyse', 'runviewer']
+TARGET_STRING = "the labscript suite"
 
 if __name__ == "__main__":
+    pyautogui.FAILSAFE = True
+    pyautogui.PAUSE = 0.3
     main()
