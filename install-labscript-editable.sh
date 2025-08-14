@@ -26,16 +26,16 @@ conda init
 
 echo "=== Creating labscript-suite dir ==="
 mkdir ~/labscript-suite
-cd labscript-suite
+cd ~/labscript-suite
 
 
-git clone https://github.com/$ENV_NAME/labscript
-git clone https://github.com/$ENV_NAME/runmanager
-git clone https://github.com/$ENV_NAME/blacs
-git clone https://github.com/$ENV_NAME/lyse
-git clone https://github.com/$ENV_NAME/runviewer
-git clone https://github.com/$ENV_NAME/labscript-devices
-git clone https://github.com/$ENV_NAME/labscript-utils
+git clone https://github.com/$GIT_REPO_OWNER/labscript.git
+git clone https://github.com/$GIT_REPO_OWNER/runmanager.git
+git clone https://github.com/$GIT_REPO_OWNER/blacs.git
+git clone https://github.com/$GIT_REPO_OWNER/lyse.git
+git clone https://github.com/$GIT_REPO_OWNER/runviewer.git
+git clone https://github.com/$GIT_REPO_OWNER/labscript-devices.git
+git clone https://github.com/$GIT_REPO_OWNER/labscript-utils.git
 
 
 echo "=== Appending labscript-suite to conda recognized channels ==="
@@ -58,3 +58,6 @@ desktop-app install blacs lyse runmanager runviewer
 
 echo "=== Conda remove conda ==="
 conda remove conda
+
+echo "=== Installing window automation tools ==="
+pip install -y pyautogui pwinctl opencvpython
