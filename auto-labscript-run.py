@@ -1,10 +1,16 @@
-import pygetwindow as gw
+import sys
+if sys.platform == 'win32':
+    import pygetwindow as gw
+elif sys.platform == 'linux':
+    import pywinctl as pwc
 import pyautogui
 import time
 import os
 import configparser
 import subprocess
 from labscript_utils import labconfig
+
+
 
 lc = labconfig.LabConfig()
 
@@ -106,7 +112,11 @@ def activate_window(window):
 
 
 def find_labscript_windows(target_string, script_order):
-    all_windows = gw.getAllWindows()
+
+    if sys.platform == 'win32':
+        all_windows = gw.getAllWindows()
+    elif sys.platform == 'linux':
+        all_windows = pwc.getAllWindows()
     matching = {}
     for window in all_windows:
         title = window.title.lower()

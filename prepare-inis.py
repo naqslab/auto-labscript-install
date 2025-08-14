@@ -4,6 +4,11 @@ from labscript_utils import labconfig
 import sys
 
 
+lc = labconfig.LabConfig()
+app_saved_configs_dir = lc.get("DEFAULT", "app_saved_configs")
+userlib_dir = lc.get("DEFAULT", "userlib")
+labscriptlib_dir = lc.get("DEFAULT", "labscriptlib")
+
 def update_labscript_ini(app_name, apparatus_name, updates):
     """
     Update settings in a labscript-suite application .ini file.
@@ -17,8 +22,6 @@ def update_labscript_ini(app_name, apparatus_name, updates):
     updates : dict
         Nested dict of {section: {option: value}} to update.
     """
-    lc = labconfig.LabConfig()
-    app_saved_configs_dir = lc.get("DEFAULT", "app_saved_configs")
 
     ini_path = os.path.join(app_saved_configs_dir, app_name, f"{app_name}.ini")
     if not os.path.exists(ini_path):
@@ -40,19 +43,25 @@ def update_labscript_ini(app_name, apparatus_name, updates):
 
     print(f"[prepare-inis] - Updated settings in {app_name}.ini successfully")
 
+example_experiment_file = os.path.join(labscriptlib_dir, "example_apparatus", "example_experiment.py")
+example_analysis_script = os.path.abspath(os.path.join("example_files", "example_analysis_script.py")) # doesn't come with labscript
+if sys.platform == "win32":
+    print("[prepare-inis] - double backslash for Windows path")
+    example_experiment_file = script.replace("\\", "\\\\")  # double backslashes in the string
+    example_analysis_script = script.replace("\\", "\\\\")  # double backslashes in the string
+
+current_labscript_file_value = f"[('{example_experiment_file}', True)]"
+singleshot_value = f"[('{example_analysis_script}', True)]"
 
 update_labscript_ini(
     app_name="runmanager",
     apparatus_name="example_apparatus",
-    updates={"runmanager_state": {"send_to_runviewer": True, "send_to_blacs": True}},
+    updates={"runmanager_state": {
+                "send_to_runviewer": True, 
+                "send_to_blacs": True,
+                "current_labscript_file": current_labscript_file_value
+}},
 )
-
-script = os.path.abspath("example_analysis_script.py")
-if sys.platform == "win32":
-    print("[prepare-inis] - double backslash for Windows path")
-    script = script.replace("\\", "\\\\")  # double backslashes in the string
-
-singleshot_value = f"[('{script}', True)]"
 
 update_labscript_ini(
     app_name="lyse",
@@ -65,3 +74,4 @@ update_labscript_ini(
     apparatus_name="example_apparatus",
     updates={"runviewer_state": {"pseudoclock_clock_line": "True"}},
 )
+
