@@ -1,0 +1,57 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  # Use a pre-built Windows 11 box https://app.vagrantup.com/boxes/search
+  config.vm.box = "dstoliker/windows11"
+
+  config.vm.communicator = "winrm"
+  config.winrm.username = "vagrant"
+  config.winrm.password = "vagrant"
+  config.winrm.port = 5985 # Default WinRM port
+
+  config.vm.guest = :windows # Need this even though box is win11
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true # Need gui to see labscript components
+    vb.memory = "8192"
+    vb.cpus = "4"
+  end
+  config.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   $minicondaInstaller = "Miniconda3-latest-Windows-x86_64.exe"
+  #   $downloadUrl = "https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe"
+    
+  #   $minicondaPath = "C:\\Miniconda3"
+    
+  #   if (Test-Path -Path $minicondaPath -PathType Container) {
+  #     Write-Host "The directory '$minicondaPath' exists. Skipping install"
+  #   } else {
+  #     Write-Host "The directory '$minicondaPath' does not exist. Installing now."
+  #     Invoke-WebRequest -Uri $downloadUrl -OutFile "$env:TEMP\\$minicondaInstaller"
+  #     # /S for silent mode
+  #     # /InstallationType=JustMe (recommended) or AllUsers
+  #     # /AddToPath=1 (adds to PATH)
+  #     # /D=<install_path> (destination path, must be last argument)
+  #     Start-Process -FilePath "$env:TEMP\\$minicondaInstaller" -ArgumentList "/S /InstallationType=JustMe /AddToPath=1 /D=C:\\Miniconda3" -Wait -PassThru #
+      
+  #   }
+    
+  #   $ENV_NAME = "labscript"
+  #   $GIT_REPO_OWNER = "labscript-suite"
+  #   C:\\Miniconda3\\Scripts\\conda.exe init powershell # Or cmd.exe, if using Command Prompt
+  #   # C:\\Miniconda3\\Scripts\\conda.exe create -n labscript python=3.11 -y
+  #   # Write-Host "=== Activating Conda environment: $ENV_NAME ==="
+
+  #   # C:\\Miniconda3\\Scripts\\conda.exe activate labscript
+  #   # C:\\Miniconda3\\Scripts\\conda.exe install git
+  # SHELL
+  if Vagrant::Util::Platform.windows?
+    config.vm.provision "shell", path: "./silent-miniconda-install.ps1"
+    config.vm.provision "shell", path: "./install-labscript-editable.ps1"
+  else
+    config.vm.provision "shell", path: "./install-labscript-editable.sh"
+  end
+
+end

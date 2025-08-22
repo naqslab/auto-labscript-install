@@ -54,7 +54,7 @@ Write-Host "=== Pip editable installing each component === "
 pip install --no-build-isolation --no-deps -e labscript -e runmanager -e blacs -e lyse -e runviewer -e labscript-devices -e labscript-utils
 
 Write-Host "=== Creating labscript profile === "
-labscript-profile-create
+labscript-profile-create -c
 
 Write-Host "=== Getting desktop apps === "
 desktop-app install blacs lyse runmanager runviewer
