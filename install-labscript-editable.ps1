@@ -2,13 +2,24 @@
 
 $ENV_NAME = "labscript"
 $GIT_REPO_OWNER = "labscript-suite"
-# $PYTHON_VERSION = 
 
-# Check if environment exists in conda list
-# You can use "conda env list" and check for the presence of the environment name.
+# Attempt 1 to accept TOS
+Set-Variable CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
+
+# Attempt 2
+try {
+    conda tos accept 
+} catch {
+    
+    # Quit entirely if it doesn't work both times :(
+    Write-Error "Failed to accept TOS: $_"
+    Exit
+}
+
+# Check if environment exists
 if (-not (conda env list | Select-String -Pattern "$ENV_NAME")) {
     Write-Host "=== "$ENV_NAME" environment not found, creating now. ==="
-    conda create -n $ENV_NAME python=3.11
+    conda create -n $ENV_NAME python=3.11 -y
 } else {
     Write-Host "=== "$ENV_NAME" already exists, skipping creation. ==="
 }
@@ -25,8 +36,6 @@ if (-not (conda env list | Select-String -Pattern "^\*.*$ENV_NAME")) {
 
 Write-Host "=== Attempting to install git ==="
 conda install -y git
-# Write-Host "=== Attempting conda init ==="
-# conda init
 
 Write-Host "=== Creating labscript-suite dir ==="
 New-Item -ItemType Directory -Name "labscript-suite"
@@ -57,7 +66,7 @@ Write-Host "=== Creating labscript profile === "
 labscript-profile-create -c
 
 Write-Host "=== Getting desktop apps === "
-desktop-app install blacs lyse runmanager runviewer
+desktop-app install blacs lyse runmanager runviewer -y
 
 Write-Host "=== Conda remove conda === "
-conda remove conda
+conda remove conda -y

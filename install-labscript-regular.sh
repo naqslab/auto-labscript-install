@@ -23,10 +23,10 @@ echo "=== Appending labscript-suite to conda recognized channels ==="
 conda config --env --append channels labscript-suite
 
 echo "=== Appending labscript-suite to conda recognized channels ==="
-conda install labscript-suite "pyqt<6"
+conda install labscript-suite "pyqt<6" -y
 
 echo "=== Creating labscript profile ==="
-labscript-profile-create
+labscript-profile-create -c
 
 echo "=== Installing Desktop Apps ==="
 desktop-app install blacs lyse runmanager runviewer
