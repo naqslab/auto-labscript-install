@@ -52,7 +52,7 @@ Vagrant.configure("2") do |config|
   if Vagrant::Util::Platform.windows?
     config.vm.provision "shell", path: "./silent-miniconda-install.ps1"
     config.vm.provision "shell", path: "./install-labscript-regular.ps1"
-    config.vm.provision "shell", path: "./migrate-install.ps1"
+    # config.vm.provision "shell", path: "./migrate-install.ps1"
   else
     config.vm.provision "shell", path: "./silent-miniconda-install.sh"
     config.vm.provision "shell", path: "./install-labscript-editable.sh"

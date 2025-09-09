@@ -4,11 +4,12 @@ function Migrate {
     )
     Write-Host "=== Attempting $Component Migration === "
     conda remove -f $Component
-    pip install -e $Component
+    pip install -e "$PathToFolder\$Component"
     Write-Host "=== $Component Migration Successful === "
 
 }
-
+$FolderName = "labscript-suite"
+$PathToFolder = "$env:USERPROFILE\$FolderName"
 # active env is the one with * before it
 # TODO: Handle empty string -> should be case where conda doesn't exist
 if (-not (conda env list | Select-String -Pattern "^\*.*$ENV_NAME")) {

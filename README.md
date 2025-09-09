@@ -20,3 +20,13 @@ Then:
 ```shell
 vagrant up --provision
 ```
+
+This will take a while the first time running since it will download the OS image specified in the VagrantFile. I recommend doing this on the fastest internet you have, since Miniconda will also install inside the virtual machine.
+
+To quit:
+
+```shell
+vagrant destroy
+```
+
+This will remove the VM and data inside, but keep the vagrant box so you don't need to redownload every time.

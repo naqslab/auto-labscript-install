@@ -48,4 +48,10 @@ else {
         Write-Error "Failed to install Miniconda: $_"
         exit 1
     }
+    try {
+        conda init powershell
+    }
+    catch {
+        Write-Error "Failed to init Miniconda powershell: $_"
+    }
 }

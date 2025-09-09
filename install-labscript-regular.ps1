@@ -29,8 +29,9 @@ conda config --env --append channels labscript-suite
 # active env is the one with * before it
 # TODO: Handle empty string -> should be case where conda doesn't exist
 if (-not (conda env list | Select-String -Pattern "^\*.*$ENV_NAME")) {
+    
+    # conda init powershell # maybe unnecessary
     Write-Host "=== Activating Conda environment: $ENV_NAME ==="
-    conda init powershell # maybe unnecessary
     conda activate $ENV_NAME
 } else {
     Write-Host "=== Conda environment "$ENV_NAME" is already active. ==="
@@ -43,7 +44,7 @@ Write-Host "=== Creating labscript-suite dir ==="
 $FolderName = "labscript-suite"
 $PathToFolder = "$env:USERPROFILE\$FolderName"
 New-Item -Path $PathToFolder -ItemType Directory 
-Set-Location "labscript-suite"
+Set-Location "$PathToFolder"
 
 Write-Host "=== Conda install labscript-suite ==="
 conda install labscript-suite "pyqt<6" -y
