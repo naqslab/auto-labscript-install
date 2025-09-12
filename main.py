@@ -3,7 +3,7 @@ import time
 import sys
 
 print("[Main Script] - Preparing config files")
-subprocess.run(["python", "prepare-inis.py"])
+subprocess.run(["python", "prepare-configs.py"])
 
 print("[Main Script] - Launching launch.py")
 # Ensure windows stay open via detached process and new session
@@ -20,7 +20,7 @@ elif sys.platform == 'linux':
         stderr=subprocess.STDOUT
 )
 
-time.sleep(8)  # wait for windows to appear
+time.sleep(10)  # wait for windows to appear
 
 print("[Main Script] - Starting GUI automation")
 subprocess.run(["python", "auto-labscript-run.py"])

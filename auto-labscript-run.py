@@ -1,7 +1,8 @@
 import sys
-if sys.platform == 'win32':
+
+if sys.platform == "win32":
     import pygetwindow as gw
-elif sys.platform == 'linux':
+elif sys.platform == "linux":
     import pywinctl as pwc
 import pyautogui
 import time
@@ -11,16 +12,17 @@ import subprocess
 from labscript_utils import labconfig
 
 
-
 lc = labconfig.LabConfig()
 
 # labconfig_path = labconfig.LabConfig
 
-app_saved_configs_dir = lc.get('DEFAULT', 'app_saved_configs')
-apparatus = 'example_apparatus'
+app_saved_configs_dir = lc.get("DEFAULT", "app_saved_configs")
+apparatus = "example_apparatus"
+
 
 def format_img_path(img_name):
     return os.path.join("imgs", f"{img_name.replace(' ', '_').lower()}.png")
+
 
 def locate_image(img_path, confidence=0.8):
     try:
@@ -107,15 +109,15 @@ def activate_window(window):
     if window.isMinimized:
         window.restore()
     window.activate()
-    window.maximize() # test?
+    window.maximize()  # test?
     time.sleep(1.5)
 
 
 def find_labscript_windows(target_string, script_order):
 
-    if sys.platform == 'win32':
+    if sys.platform == "win32":
         all_windows = gw.getAllWindows()
-    elif sys.platform == 'linux':
+    elif sys.platform == "linux":
         all_windows = pwc.getAllWindows()
     matching = {}
     for window in all_windows:
@@ -145,11 +147,7 @@ def runmanager_routine():
         "send_to_blacs": "True",
     }
 
-    # tick_box(
-    #     "runmanager-viewshots-unclicked", "runmanager-viewshots-clicked", confidence=0.9
-    # )
     time.sleep(0.5)
-    # click_button("runmanager-engage") # may have to do this for ubuntu
 
     pyautogui.press("f5")  # engage keyboard shortcut
 
@@ -158,11 +156,11 @@ def blacs_routine():
     print("[Blacs] Executing routine")
     # if tick_box('blacs-lyse-server-empty', 'blacs-lyse-server-local'):
     #     pyautogui.write('127.0.0.1')
-    fill_empty_field(
-        empty_img="blacs-lyse-server-empty",
-        filled_img="blacs-lyse-server-local",
-        text_to_type="127.0.0.1",
-    )
+    # fill_empty_field(
+    #     empty_img="blacs-lyse-server-empty",
+    #     filled_img="blacs-lyse-server-local",
+    #     text_to_type="127.0.0.1",
+    # )
     # assert blacs sent a shot??? maybe that's going to be timing based screenshot matching aka bad
 
 
@@ -188,7 +186,7 @@ ROUTINES = {
 
 
 def main():
-    
+
     print("Locating labscript suite windows")
     windows = find_labscript_windows(TARGET_STRING, SCRIPT_ORDER)
 
@@ -200,18 +198,18 @@ def main():
 
         print(f"\n[{app.title()}] Activating")
         activate_window(win)
-
         routine = ROUTINES.get(app)
         if routine:
             routine()
+            time.sleep(3) # wait for routine to finish - will try different time values
         else:
             print(f"[{app.title()}] No routine defined.")
 
     print("\n=== Auto labscript complete ===")
 
 
-SCRIPT_ORDER = ["runmanager", "blacs", "lyse", "runviewer"]
-# SCRIPT_ORDER = ["runmanager"]
+# SCRIPT_ORDER = ["runmanager", "blacs", "lyse", "runviewer"]
+SCRIPT_ORDER = ["runmanager"]
 TARGET_STRING = "the labscript suite"
 
 if __name__ == "__main__":
