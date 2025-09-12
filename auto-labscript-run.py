@@ -166,12 +166,14 @@ def blacs_routine():
 
 def lyse_routine():
     print("[Lyse] Executing routine")
+    # TODO: Add in some checks to see lyse analysis ran correctly
     # activate_window('1 - example_analysis_script.py')
     pass
 
 
 def runviewer_routine():
     print("[Runviewer] Executing routine")
+    # TODO: Can probably "pre-click" using config injection
     tick_box(
         "runviewer-checkbox-withtext-unticked", "runviewer-checkbox-withtext-ticked"
     )

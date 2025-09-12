@@ -39,4 +39,6 @@ Vagrant.configure("2") do |config|
     config.vm.provision "shell", path: "./silent-miniconda-install.sh"
     config.vm.provision "shell", path: "./install-labscript-editable.sh"
   end
+
+  # TODO: Provision the python scripts here 
 end

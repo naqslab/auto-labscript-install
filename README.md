@@ -63,10 +63,10 @@ The idea is to have scripts that enable the following list to be automated:
 
 ## Progress
 
-A table of current working components of the above list
+A table of current working components of the above list, assuming the item runs without intervention from `vagrant up --provision`
 
 | Guest OS | Launch VM | Get Conda/Pip | Install Labscript (Editable/Regular) | Exercise Features | Graceful Exit |
 | -------- | --------- | ------------- | ------------------------------------ | ----------------- | ------------- |
 | Linux    | -[ ]      | -[ ] / -[ ]   | -[ ] / -[ ]                          | -[ ]              | -[ ]          |
-| Windows  | -[ ]      | -[ ] / -[ ]   | -[ ] / -[ ]                          | -[ ]              | -[ ]          |
+| Windows  | -[x]      | -[x] / -[ ]   | -[ ] / -[ ]                          | -[ ]              | -[ ]          |
 | MacOS    | -[ ]      | -[ ] / -[ ]   | -[ ] / -[ ]                          | -[ ]              | -[ ]          |
